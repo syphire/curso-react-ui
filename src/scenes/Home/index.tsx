@@ -10,8 +10,11 @@ import { TextInput } from '../../components/TextInput';
 import { useTimelineQuery, usePublishMutation } from '../../generated/graphql';
 import { useAuth } from '../../modules/auth';
 
+import { EXTRA_PADDING_FIRST_ITEM, ITEM_SIZE } from './constants';
 import { Row } from './Row';
 import { container, logo, options, submit, timeline } from './styles';
+
+const POLL_EVERY_MS = 5000;
 
 export const Home = () => {
   const { signOutUrl } = useAuth();
@@ -19,30 +22,28 @@ export const Home = () => {
   const [publishMutation] = usePublishMutation();
   const [message, setMessage] = useState('');
 
-  const POLL_EVERY_MS = 5000;
-
   const clickPublish = useCallback(async () => {
     await publishMutation({ variables: { message } });
     fetchMore({ variables: { before: data?.timeline.pageInfo.startCursor } });
     setMessage('');
   }, [data?.timeline.pageInfo.startCursor, fetchMore, message, publishMutation]);
 
-  useEffect(() => {
-    if (!data) return;
-    let cancelled = false;
+  // useEffect(() => {
+  //   if (!data) return;
+  //   let cancelled = false;
 
-    const tryFetching = () => {
-      if (cancelled) return;
-      fetchMore({ variables: { before: data.timeline.pageInfo.startCursor } });
-      setTimeout(tryFetching, POLL_EVERY_MS);
-    };
+  //   const tryFetching = () => {
+  //     if (cancelled) return;
+  //     fetchMore({ variables: { before: data.timeline.pageInfo.startCursor } });
+  //     setTimeout(tryFetching, POLL_EVERY_MS);
+  //   };
 
-    tryFetching();
+  //   tryFetching();
 
-    return () => {
-      cancelled = true;
-    };
-  }, [data, fetchMore]);
+  //   return () => {
+  //     cancelled = true;
+  //   };
+  // }, [data, fetchMore]);
 
   return (
     <div css={container}>
@@ -76,7 +77,9 @@ export const Home = () => {
                     height={height}
                     width={width}
                     itemCount={data.timeline.edges.length}
-                    itemSize={() => 70}
+                    itemSize={(index) =>
+                      index === 0 ? EXTRA_PADDING_FIRST_ITEM + ITEM_SIZE : ITEM_SIZE
+                    }
                     itemKey={(index) => data.timeline.edges[index].node.id}
                     itemData={data}
                     onItemsRendered={onItemsRendered}

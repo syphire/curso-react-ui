@@ -3,6 +3,8 @@ import { rem } from 'polished';
 
 import { sizes } from '../../modules/styles';
 
+import { EXTRA_PADDING_FIRST_ITEM } from './constants';
+
 export const container = css`
   min-height: 100vh;
   min-width: 100vw;
@@ -26,6 +28,7 @@ export const submit = css`
   grid-template-columns: 1fr auto;
   grid-gap: ${rem(sizes.centi)};
   align-self: center;
+  z-index: 1;
 `;
 
 export const options = css`
@@ -36,4 +39,5 @@ export const options = css`
 
 export const timeline = css`
   grid-area: timeline;
+  margin-block-start: -${rem(EXTRA_PADDING_FIRST_ITEM)};
 `;
